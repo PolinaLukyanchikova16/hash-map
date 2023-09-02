@@ -12,7 +12,8 @@ class HashMap(HashMapInterface):
     def __init__(self, size=8):
         if size < 1:
             raise ValueError("Size must be a positive number")
-        self._slots = size * [None]
+        self._size = size
+        self._slots = None
 
     def set(self, key, value):
         for index, pair in self._probe(key):
@@ -32,10 +33,11 @@ class HashMap(HashMapInterface):
         raise KeyError(key)
 
     def _resize_and_rehash(self):
-        copy = HashMap(size=self.size * 2)
-        for key, value in self._slots:
-            copy.set(key, value)
-        self._slots = copy._slots
+        self._size *= 2
+        old_slots = self._slots.copy()
+        self._slots = self._size * [None]
+        for key, value in old_slots:
+            self.set(key, value)
 
     def _index(self, key) -> int:
         return hash(key) % len(self._slots)
@@ -47,10 +49,11 @@ class HashMap(HashMapInterface):
             index = (index + 1) % self.size
 
     def __enter__(self):
+        self._slots = self._size * [None]
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self._slots = self.size * [None]
+        self._slots = None
 
     @property
     def size(self):
@@ -64,8 +67,10 @@ if __name__ == "__main__":
         hash_map.set("country", "Ukraine")
         hash_map.set("region", "Lvivska")
         hash_map.set("city", "Lviv")
+        hash_map.set("street", "Zamknena")
 
+        print(hash_map.get("planet"))
         print(hash_map.get("country"))
-        print(hash_map.get("city"))
         print(hash_map.get("region"))
         print(hash_map.get("city"))
+        print(hash_map.get("street"))
