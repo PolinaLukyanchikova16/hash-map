@@ -1,6 +1,11 @@
+import argparse
 from typing import Any, NamedTuple, Union
 
 from interface.hash_map import HashMapInterface
+
+
+parser = argparse.ArgumentParser(prog="HashMap")
+parser.add_argument("-s", "--size", type=int, help="an initial size of hashmap")
 
 
 class Pair(NamedTuple):
@@ -61,8 +66,10 @@ class HashMap(HashMapInterface):
 
 
 if __name__ == "__main__":
+    args = parser.parse_args()
+    hashmap_size = args.size
 
-    with HashMap(size=3) as hash_map:
+    with HashMap(size=hashmap_size) as hash_map:
         hash_map.set("planet", "Earth")
         hash_map.set("country", "Ukraine")
         hash_map.set("region", "Lvivska")
